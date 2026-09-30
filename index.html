@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SouqDZ — Achetez, vendez, découvrez</title>
+
+<!-- PWA : manifest + icônes -->
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0e7c66" />
+
+<!-- Icônes standard (Android / Chrome / navigateurs) -->
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
+
+<!-- Icône iPhone / iPad (Ajouter à l'écran d'accueil) -->
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="SouqDZ" />
+<style>
+  :root {
+    --primary: #0e7c66;
+    --primary-dark: #095e4d;
+    --accent: #f4a300;
+    --bg: #f7f8fa;
+    --card-bg: #ffffff;
+    --text: #1a1a1a;
+    --text-light: #6b7280;
+    --border: #e5e7eb;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  a { text-decoration: none; color: inherit; }
+  img { max-width: 100%; display: block; }
+  button { font-family: inherit; }
+
+  /* ===== Header ===== */
+  header { background: var(--card-bg); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
+  .header-top { display: flex; align-items: center; gap: 14px; padding: 14px 24px; max-width: 1200px; margin: 0 auto; flex-wrap: wrap; }
+  .logo { font-size: 22px; font-weight: 800; color: var(--primary); white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+  .logo span { color: var(--accent); }
+  .search-bar { flex: 1; display: flex; align-items: center; background: var(--bg); border: 1px solid var(--border); border-radius: 999px; padding: 8px 16px; gap: 8px; min-width: 160px; }
+  .search-bar input { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; }
+  .location-badge { display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: var(--primary); background: #eef6f3; padding: 8px 12px; border-radius: 999px; white-space: nowrap; cursor: pointer; border: none; }
+  .header-actions { display: flex; align-items: center; gap: 8px; white-space: nowrap; margin-inline-start: auto; }
+  .header-actions-row1 { display: flex; align-items: center; gap: 8px; }
+  .icon-btn { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 17px; background: var(--bg); cursor: pointer; border: none; position: relative; }
+  .icon-btn .dot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; border-radius: 50%; background: #dc2626; display: none; }
+  .icon-btn .dot.show { display: block; }
+  .btn { padding: 9px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; border: none; }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn-sm { padding: 6px 12px; font-size: 13px; }
+  .header-nav { display: flex; gap: 20px; padding: 10px 24px; max-width: 1200px; margin: 0 auto; font-size: 14px; color: var(--text-light); overflow-x: auto; }
+  .header-nav a:hover { color: var(--primary); }
+  .header-nav a { cursor: pointer; white-space: nowrap; }
+
+  /* ===== Hero ===== */
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 56px 24px; text-align: center; }
+  .hero h1 { font-size: 32px; font-weight: 800; max-width: 700px; margin: 0 auto 12px; }
+  .hero p { font-size: 15px; opacity: 0.9; margin-bottom: 24px; }
+  .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .hero .btn-primary { background: var(--accent); color: #1a1a1a; }
+  .hero .btn-outline { border-color: rgba(255,255,255,0.5); color: white; background: transparent; }
+
+  main { max-width: 1200px; margin: 0 auto; padding: 36px 24px; }
+  .section-title { font-size: 20px; font-weight: 700; margin-bottom: 16px; display:flex; align-items:center; justify-content:space-between; }
+
+  .categories-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 14px; margin-bottom: 44px; }
+  .category-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 10px; text-align: center; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+  .category-card.active, .category-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--primary); }
+  .category-card .emoji { font-size: 24px; margin-bottom: 6px; }
+  .category-card .name { font-size: 13px; font-weight: 600; }
+
+  .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
+  .product-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: box-shadow 0.15s, transform 0.15s; position: relative; cursor: pointer; }
+  .product-card:hover { box-shadow: 0 10px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
+  .product-image { aspect-ratio: 4/3; background: #eef1f4; display: flex; align-items: center; justify-content: center; font-size: 34px; color: #c3cad3; overflow: hidden; }
+  .product-image img { width: 100%; height: 100%; object-fit: cover; }
+  .fav-btn { position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.92); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; z-index: 2; border: none; }
+  .fav-btn.active { color: #dc2626; }
+  .product-body { padding: 12px 14px 14px; }
+  .product-name { font-size: 14px; font-weight: 600; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .product-price { color: var(--primary); font-weight: 800; font-size: 16px; margin-bottom: 6px; }
+  .product-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-light); margin-bottom: 10px; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #eef6f3; color: var(--primary); font-weight: 600; }
+  .product-card .btn { width: 100%; }
+  .empty-state { grid-column: 1 / -1; text-align: center; padding: 50px 20px; color: var(--text-light); background: var(--card-bg); border: 1px dashed var(--border); border-radius: var(--radius); }
+  .empty-state .emoji { font-size: 40px; margin-bottom: 10px; }
+
+  footer { text-align: center; padding: 30px 24px; color: var(--text-light); font-size: 13px; border-top: 1px solid var(--border); margin-top: 40px; }
+
+  /* ===== Modals ===== */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
+  .overlay.show { display: flex; }
+  .modal { background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 480px; max-height: 88vh; overflow-y: auto; padding: 22px; position: relative; }
+  .modal.wide { max-width: 640px; }
+  .modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-light); }
+  .modal h2 { font-size: 19px; margin-bottom: 16px; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+  .field input, .field select, .field textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; outline: none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--primary); }
+  .field-row { display: flex; gap: 10px; }
+  .field-row .field { flex: 1; }
+  .form-error { background: #fdecec; color: #b91c1c; padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 12px; display: none; }
+  .form-error.show { display: block; }
+  .tabs { display: flex; gap: 6px; margin-bottom: 16px; background: var(--bg); border-radius: 10px; padding: 4px; }
+  .tab-btn { flex: 1; padding: 8px; border: none; background: none; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; color: var(--text-light); }
+  .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+
+  .photo-upload { border: 2px dashed var(--border); border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; margin-bottom: 12px; }
+  .photo-upload:hover { border-color: var(--primary); }
+  .photo-previews { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .photo-previews .thumb { width: 64px; height: 64px; border-radius: 8px; overflow: hidden; position: relative; }
+  .photo-previews .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-previews .thumb .rm { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; cursor: pointer; }
+
+  /* Détail produit */
+  .detail-gallery { aspect-ratio: 16/10; background: #eef1f4; border-radius: 12px; overflow: hidden; margin-bottom: 14px; display:flex; align-items:center; justify-content:center; font-size:40px; color:#c3cad3; }
+  .detail-gallery img { width: 100%; height: 100%; object-fit: cover; }
+  .detail-thumbs { display: flex; gap: 6px; margin-bottom: 14px; }
+  .detail-thumbs img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; }
+  .detail-thumbs img.active { border-color: var(--primary); }
+  .seller-box { display: flex; align-items: center; gap: 10px; background: var(--bg); padding: 12px; border-radius: 10px; margin: 14px 0; }
+  .seller-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .detail-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  .detail-actions .btn { flex: 1; min-width: 140px; }
+
+  /* Chat */
+  .chat-box { display: flex; flex-direction: column; height: 420px; }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 10px 4px; display: flex; flex-direction: column; gap: 8px; }
+  .msg { max-width: 75%; padding: 8px 12px; border-radius: 12px; font-size: 13px; }
+  .msg.me { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 3px; }
+  .msg.them { align-self: flex-start; background: var(--bg); border-bottom-left-radius: 3px; }
+  .chat-input { display: flex; gap: 8px; margin-top: 10px; }
+  .chat-input input { flex: 1; }
+
+  .my-list-item { display: flex; gap: 12px; align-items: center; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin-bottom: 8px; }
+  .my-list-item .thumb { width: 54px; height: 54px; border-radius: 8px; background: #eef1f4; object-fit: cover; flex-shrink: 0; }
+  .my-list-item .info { flex: 1; min-width: 0; }
+  .my-list-item .info .n { font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: white; padding: 10px 18px; border-radius: 999px; font-size: 13px; z-index: 300; opacity: 0; transition: opacity 0.25s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+
+  .overlay.page { align-items: stretch; justify-content: stretch; padding: 0; background: var(--bg); }
+  .page-modal { background: var(--bg); width: 100%; max-width: 100%; height: 100%; max-height: 100%; border-radius: 0; overflow-y: auto; padding: 0; margin: 0; }
+  .page-topbar { display: flex; align-items: center; gap: 14px; padding: 16px 20px; background: var(--card-bg); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; }
+  .page-topbar .back-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text); width: 34px; height: 34px; border-radius: 50%; }
+  .page-topbar .back-btn:hover { background: var(--bg); }
+  .page-topbar h2 { font-size: 17px; margin: 0; }
+  .page-body { padding: 20px; max-width: 560px; margin: 0 auto; }
+
+  @media (max-width: 720px) {
+    .search-bar { order: 3; width: 100%; }
+    .location-badge span { display: none; }
+    .header-nav { display: none; }
+    .hero h1 { font-size: 24px; }
+    .header-actions {
+      order: 4;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      margin-inline-start: 0;
+      gap: 8px;
+      padding-top: 6px;
+    }
+    .header-actions-row1 {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .header-actions #publishBtn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <a class="logo" href="#" id="logoHome">
+      <svg width="30" height="30" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0e9c7f"/><stop offset="100%" stop-color="#095e4d"/></linearGradient></defs>
+        <g transform="translate(5,7)">
+          <path d="M14 22 L14 16 C14 8.8 19.8 3 27 3 C34.2 3 40 8.8 40 16 L40 22" fill="none" stroke="url(#bg1)" stroke-width="5" stroke-linecap="round"/>
+          <rect x="4" y="20" width="46" height="26" rx="10" fill="url(#bg1)"/>
+          <path d="M18 33 C18 41 22 46 27 46 C32 46 36 41 36 33" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="44" cy="42" r="9" fill="#f4a300" stroke="#fff" stroke-width="2"/>
+          <text x="44" y="45" font-family="Arial, sans-serif" font-size="8.5" font-weight="800" fill="#fff" text-anchor="middle">DZ</text>
+        </g>
+      </svg>
+      Souq<span>DZ</span>
+    </a>
+    <div class="search-bar">
+      <span>🔍</span>
+      <input type="text" id="searchInput" placeholder="Rechercher un produit, une marque..." />
+    </div>
+    <button class="location-badge" id="locationBadge" title="Position par défaut">📍 <span id="locationLabel">Alger</span></button>
+    <div class="header-actions" id="headerActions"></div>
+  </div>
+  <nav class="header-nav">
+    <a data-nav="categories">Catégories</a>
+    <a data-nav="produits">Marketplace</a>
+    <a data-nav="favoris">Mes favoris</a>
+    <a data-nav="messages">Mes messages</a>
+    <a data-nav="mesannonces">Mes annonces</a>
+    <a data-nav="commandes">Commandes reçues</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Vendez, achetez, découvrez de nouveaux produits</h1>
+  <p>Un seul endroit qui réunit vendeurs et acheteurs partout en Algérie.</p>
+  <div class="hero-actions">
+    <button class="btn btn-primary" id="heroPublish">Publier une annonce</button>
+    <button class="btn btn-outline" onclick="document.getElementById('produits').scrollIntoView({behavior:'smooth'})">Explorer les produits</button>
+  </div>
+</section>
+
+<main>
+  <section id="categories">
+    <h2 class="section-title">Catégories</h2>
+    <div class="categories-grid" id="categoriesGrid"></div>
+  </section>
+
+  <section id="produits">
+    <h2 class="section-title">
+      <span id="produitsTitle">Produits récents</span>
+      <button class="btn btn-outline btn-sm" id="clearFilterBtn" style="display:none;">✕ Réinitialiser</button>
+    </h2>
+    <div class="products-grid" id="productsGrid"></div>
+  </section>
+</main>
+
+<footer>© 2026 SouqDZ — Marketplace algérienne. Version de démonstration locale (fonctionne entièrement dans ton navigateur).</footer>
+
+<!-- ===== Page Auth (Connexion / Inscription) ===== -->
+<div class="overlay page" id="authOverlay">
+  <div class="page-modal">
+    <div class="page-topbar">
+      <button class="back-btn" data-close="authOverlay">←</button>
+      <h2 id="authPageTitle">Connexion</h2>
+    </div>
+    <div class="page-body">
+      <div class="tabs">
+        <button class="tab-btn active" id="tabLogin">Connexion</button>
+        <button class="tab-btn" id="tabRegister">Inscription</button>
+      </div>
+
+      <div id="loginForm">
+        <div class="form-error" id="loginError"></div>
+        <div class="field"><label>Email</label><input type="email" id="loginEmail" /></div>
+        <div class="field"><label>Mot de passe</label><input type="password" id="loginPassword" /></div>
+        <button class="btn btn-primary" style="width:100%" id="loginSubmit">Se connecter</button>
+      </div>
+
+      <div id="registerForm" style="display:none;">
+        <div class="form-error" id="registerError"></div>
+        <div class="field-row">
+          <div class="field"><label>Prénom</label><input type="text" id="regPrenom" /></div>
+          <div class="field"><label>Nom</label><input type="text" id="regNom" /></div>
+        </div>
+        <div class="field"><label>Email</label><input type="email" id="regEmail" /></div>
+        <div class="field"><label>Téléphone (ex: 0551234567)</label><input type="text" id="regTelephone" /></div>
+        <div class="field-row">
+          <div class="field"><label>Wilaya</label><input type="text" id="regWilaya" placeholder="Alger" /></div>
+          <div class="field"><label>Commune</label><input type="text" id="regCommune" /></div>
+        </div>
+        <div class="field"><label>Mot de passe</label><input type="password" id="regPassword" /></div>
+        <button class="btn btn-primary" style="width:100%" id="registerSubmit">Créer mon compte</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Page Publier une annonce ===== -->
+<div class="overlay page" id="publishOverlay">
+  <div class="page-modal">
+    <div class="page-topbar">
+      <button class="back-btn" data-close="publishOverlay">←</button>
+      <h2>Publier une annonce</h2>
+    </div>
+    <div class="page-body">
+      <div class="form-error" id="publishError"></div>
+
+      <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;">Photos du produit</label>
+      <div class="photo-upload" id="photoUploadZone">
+        📷 Cliquez ou appuyez ici pour ajouter des photos (max 8)
+        <input type="file" id="photoInput" accept="image/*" multiple hidden />
+      </div>
+      <div class="photo-previews" id="photoPreviews"></div>
+
+      <div class="field"><label>Nom du produit</label><input type="text" id="pNom" /></div>
+      <div class="field"><label>Description</label><textarea id="pDescription" rows="3"></textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Prix (DA)</label><input type="number" id="pPrix" /></div>
+        <div class="field"><label>Catégorie</label>
+          <select id="pCategorie"></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>État</label>
+          <select id="pEtat"><option value="NEUF">Neuf</option><option value="OCCASION">Occasion</option></select>
+        </div>
+        <div class="field"><label>Livraison</label>
+          <select id="pLivraison">
+            <option value="LIVRAISON">Livraison</option>
+            <option value="MAIN_PROPRE">Remise en main propre</option>
+            <option value="LES_DEUX">Les deux</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Wilaya</label><input type="text" id="pWilaya" value="Alger" /></div>
+        <div class="field"><label>Commune</label><input type="text" id="pCommune" /></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%" id="publishSubmit">Publier l'annonce</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Modal Détail produit ===== -->
+<div class="overlay" id="detailOverlay">
+  <div class="modal wide">
+    <button class="modal-close" data-close="detailOverlay">✕</button>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<!-- ===== Page Chat ===== -->
+<div class="overlay page" id="chatOverlay">
+  <div class="page-modal">
+    <div class="page-topbar">
+      <button class="back-btn" id="chatBackBtn">←</button>
+      <h2 id="chatTitle">Conversation</h2>
+    </div>
+    <div class="page-body" style="max-width:640px;">
+      <div class="chat-box">
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+          <input type="text" id="chatInput" placeholder="Écris un message..." />
+          <button class="btn btn-primary" id="chatSend">Envoyer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Page Checkout (achat, sans compte obligatoire) ===== -->
+<div class="overlay page" id="checkoutOverlay">
+  <div class="page-modal">
+    <div class="page-topbar">
+      <button class="back-btn" data-close="checkoutOverlay">←</button>
+      <h2>Confirmer la commande</h2>
+    </div>
+    <div class="page-body">
+      <div id="checkoutProductSummary" style="display:flex;gap:12px;align-items:center;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:16px;"></div>
+      <div class="form-error" id="checkoutError"></div>
+
+      <div class="field"><label>Nom complet</label><input type="text" id="coNom" /></div>
+      <div class="field"><label>Téléphone (ex: 0551234567)</label><input type="text" id="coTelephone" /></div>
+      <div class="field-row">
+        <div class="field"><label>Quantité</label><input type="number" id="coQuantite" value="1" min="1" /></div>
+        <div class="field"><label>Mode de livraison</label>
+          <select id="coLivraison">
+            <option value="LIVRAISON">Livraison</option>
+            <option value="MAIN_PROPRE">Remise en main propre</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Wilaya</label><input type="text" id="coWilaya" /></div>
+        <div class="field"><label>Commune</label><input type="text" id="coCommune" /></div>
+      </div>
+      <div class="field"><label>Adresse</label><input type="text" id="coAdresse" placeholder="Adresse de livraison ou point de rendez-vous" /></div>
+
+      <div style="background:var(--bg);border-radius:10px;padding:12px;margin:14px 0;font-size:13px;color:var(--text-light);">
+        💳 Paiement à la livraison ou en main propre. Aucun paiement en ligne n'est demandé.
+      </div>
+
+      <button class="btn btn-primary" style="width:100%" id="checkoutSubmit">Confirmer la commande</button>
+      <p style="text-align:center;font-size:12px;color:var(--text-light);margin-top:10px;">
+        Tu n'as pas besoin de créer de compte pour acheter.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Page Liste (favoris / messages / mes annonces) ===== -->
+<div class="overlay page" id="listOverlay">
+  <div class="page-modal">
+    <div class="page-topbar">
+      <button class="back-btn" data-close="listOverlay">←</button>
+      <h2 id="listTitle"></h2>
+    </div>
+    <div class="page-body" id="listContent" style="max-width:640px;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   SouqDZ — Démo locale entièrement fonctionnelle
+   Tout est stocké dans localStorage : comptes, annonces,
+   photos, favoris, messages. Aucune installation nécessaire.
+   ========================================================= */
+
+// ---------- Stockage local ----------
+const DB = {
+  get(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } },
+  set(key, val) { localStorage.setItem(key, JSON.stringify(val)); },
+};
+
+const DEFAULT_LOCATION = DB.get("souqdz_location", { ville: "Alger", lat: 36.7538, lng: 3.0588 });
+
+const CATEGORIES = [
+  { nom: "Téléphones", emoji: "📱" }, { nom: "Informatique", emoji: "💻" },
+  { nom: "Électronique", emoji: "🔌" }, { nom: "Mode", emoji: "👗" },
+  { nom: "Maison", emoji: "🏠" }, { nom: "Véhicules", emoji: "🚗" },
+  { nom: "Électroménager", emoji: "🧺" }, { nom: "Sport", emoji: "⚽" },
+  { nom: "Jeux vidéo", emoji: "🎮" }, { nom: "Beauté", emoji: "💄" },
+  { nom: "Services", emoji: "🛠️" }, { nom: "Autres", emoji: "📦" },
+];
+
+let users = DB.get("souqdz_users", []);
+let products = DB.get("souqdz_products", []); // vide par défaut -> "Aucune annonce"
+let favorites = DB.get("souqdz_favorites", []); // {userId, productId}
+let conversations = DB.get("souqdz_conversations", []); // {id, productId, buyerId, sellerId, messages:[]}
+let orders = DB.get("souqdz_orders", []); // achats invités ou connectés
+let currentUserId = DB.get("souqdz_currentUserId", null);
+
+function saveAll() {
+  DB.set("souqdz_users", users);
+  DB.set("souqdz_products", products);
+  DB.set("souqdz_favorites", favorites);
+  DB.set("souqdz_conversations", conversations);
+  DB.set("souqdz_orders", orders);
+  DB.set("souqdz_currentUserId", currentUserId);
+}
+
+function currentUser() { return users.find(u => u.id === currentUserId) || null; }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+function formatPrix(p) { return new Intl.NumberFormat("fr-DZ").format(p) + " DA"; }
+function emojiFor(nom) { const c = CATEGORIES.find(c => c.nom === nom); return c ? c.emoji : "🏷️"; }
+function initials(prenom, nom) { return ((prenom?.[0] || "") + (nom?.[0] || "")).toUpperCase(); }
+
+// ---------- Header dynamique ----------
+function renderHeader() {
+  const box = document.getElementById("headerActions");
+  const user = currentUser();
+  const myUnread = user ? conversations
+    .filter(c => c.buyerId === user.id || c.sellerId === user.id)
+    .reduce((sum, c) => sum + c.messages.filter(m => m.senderId !== user.id && !m.read).length, 0) : 0;
+  const myFavCount = user ? favorites.filter(f => f.userId === user.id).length : 0;
+
+  if (user) {
+    box.innerHTML = `
+      <div class="header-actions-row1">
+        <button class="icon-btn" data-nav="favoris" title="Favoris">♡<span class="dot ${myFavCount ? 'show' : ''}"></span></button>
+        <button class="icon-btn" data-nav="messages" title="Messages">💬<span class="dot ${myUnread ? 'show' : ''}"></span></button>
+        <span class="btn btn-outline btn-sm user-pill" style="cursor:default;">👤 ${user.prenom}</span>
+        <button class="btn btn-outline btn-sm" id="logoutBtn">Déconnexion</button>
+      </div>
+      <button class="btn btn-primary" id="publishBtn">Publier une annonce</button>
+    `;
+    document.getElementById("logoutBtn").onclick = () => { currentUserId = null; saveAll(); renderHeader(); toast("Déconnecté."); };
+    document.getElementById("publishBtn").onclick = openPublishModal;
+  } else {
+    box.innerHTML = `
+      <div class="header-actions-row1">
+        <button class="icon-btn" data-nav="favoris" title="Favoris">♡</button>
+        <button class="btn btn-outline" id="loginBtn">Connexion</button>
+      </div>
+      <button class="btn btn-primary" id="publishBtn">Publier une annonce</button>
+    `;
+    document.getElementById("loginBtn").onclick = () => openAuthModal("login");
+    document.getElementById("publishBtn").onclick = openPublishModal;
+  }
+  box.querySelectorAll("[data-nav]").forEach(el => el.onclick = () => handleNav(el.dataset.nav));
+}
+
+document.querySelectorAll(".header-nav [data-nav]").forEach(el => el.onclick = () => handleNav(el.dataset.nav));
+document.getElementById("heroPublish").onclick = openPublishModal;
+document.getElementById("logoHome").onclick = (e) => { e.preventDefault(); document.getElementById("produits").scrollIntoView({behavior:"smooth"}); };
+
+function handleNav(target) {
+  if (target === "categories" || target === "produits") {
+    document.getElementById(target).scrollIntoView({ behavior: "smooth" });
+    return;
+  }
+  const user = currentUser();
+  if (!user) { openAuthModal("login"); toast("Connecte-toi d'abord."); return; }
+
+  if (target === "favoris") openListModal("Mes favoris", myFavoritesList());
+  if (target === "messages") openListModal("Mes messages", myConversationsList());
+  if (target === "mesannonces") openListModal("Mes annonces", myAnnoncesList);
+  if (target === "commandes") openListModal("Commandes reçues", receivedOrdersList);
+}
+
+// ---------- Catégories ----------
+let activeCategory = null;
+function renderCategories() {
+  const grid = document.getElementById("categoriesGrid");
+  grid.innerHTML = CATEGORIES.map(c => `
+    <div class="category-card ${activeCategory === c.nom ? 'active' : ''}" data-cat="${c.nom}">
+      <div class="emoji">${c.emoji}</div>
+      <div class="name">${c.nom}</div>
+    </div>
+  `).join("");
+  grid.querySelectorAll("[data-cat]").forEach(el => el.onclick = () => {
+    activeCategory = activeCategory === el.dataset.cat ? null : el.dataset.cat;
+    document.getElementById("clearFilterBtn").style.display = activeCategory ? "inline-block" : "none";
+    renderProducts();
+  });
+}
+document.getElementById("clearFilterBtn").onclick = () => {
+  activeCategory = null;
+  document.getElementById("searchInput").value = "";
+  document.getElementById("clearFilterBtn").style.display = "none";
+  renderProducts();
+};
+
+// ---------- Produits ----------
+function renderProducts() {
+  const grid = document.getElementById("productsGrid");
+  const q = document.getElementById("searchInput").value.trim().toLowerCase();
+
+  let list = products.filter(p => p.status === "ACTIVE");
+  if (activeCategory) list = list.filter(p => p.categorie === activeCategory);
+  if (q) list = list.filter(p => p.nom.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
+  list = [...list].sort((a, b) => b.createdAt - a.createdAt);
+
+  if (!list.length) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="emoji">📭</div>
+        <p><strong>Aucune annonce pour le moment.</strong></p>
+        <p style="margin-top:6px;">Sois le premier à publier un produit sur SouqDZ !</p>
+        <button class="btn btn-primary" style="margin-top:14px;" onclick="document.getElementById('heroPublish').click()">Publier une annonce</button>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(p => {
+    const seller = users.find(u => u.id === p.sellerId);
+    const isFav = currentUser() && favorites.some(f => f.userId === currentUserId && f.productId === p.id);
+    return `
+    <div class="product-card" data-id="${p.id}">
+      <div class="product-image">
+        <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${p.id}">${isFav ? '❤️' : '♡'}</button>
+        ${p.images[0] ? `<img src="${p.images[0]}" />` : "🖼️"}
+      </div>
+      <div class="product-body">
+        <div class="product-name">${p.nom}</div>
+        <div class="product-price">${formatPrix(p.prix)}</div>
+        <div class="product-meta"><span>${p.wilaya}</span><span class="badge">${p.etat === "NEUF" ? "Neuf" : "Occasion"}</span></div>
+        <div class="product-meta"><span>Vendeur : ${seller ? seller.prenom : "—"}</span></div>
+        <button class="btn btn-primary">Voir le produit</button>
+      </div>
+    </div>`;
+  }).join("");
+
+  grid.querySelectorAll(".product-card").forEach(card => {
+    card.addEventListener("click", (e) => {
+      if (e.target.closest("[data-fav]")) return;
+      openProductDetail(card.dataset.id);
+    });
+  });
+  grid.querySelectorAll("[data-fav]").forEach(btn => {
+    btn.addEventListener("click", (e) => { e.stopPropagation(); toggleFavorite(btn.dataset.fav); });
+  });
+}
+document.getElementById("searchInput").addEventListener("input", renderProducts);
+
+function toggleFavorite(productId) {
+  const user = currentUser();
+  if (!user) { openAuthModal("login"); toast("Connecte-toi pour ajouter aux favoris."); return; }
+  const idx = favorites.findIndex(f => f.userId === user.id && f.productId === productId);
+  if (idx >= 0) favorites.splice(idx, 1); else favorites.push({ userId: user.id, productId });
+  saveAll(); renderProducts(); renderHeader();
+}
+
+// ---------- Détail produit ----------
+let detailImgIndex = 0;
+function openProductDetail(productId) {
+  const p = products.find(x => x.id === productId);
+  if (!p) return;
+  const seller = users.find(u => u.id === p.sellerId);
+  const isOwner = currentUserId && p.sellerId === currentUserId;
+  detailImgIndex = 0;
+
+  const render = () => {
+    const isFav = currentUser() && favorites.some(f => f.userId === currentUserId && f.productId === p.id);
+    document.getElementById("detailContent").innerHTML = `
+      <div class="detail-gallery">
+        ${p.images.length ? `<img src="${p.images[detailImgIndex]}" />` : "🖼️"}
+      </div>
+      ${p.images.length > 1 ? `<div class="detail-thumbs">${p.images.map((img, i) => `<img src="${img}" class="${i === detailImgIndex ? 'active' : ''}" data-i="${i}" />`).join("")}</div>` : ""}
+      <h2>${p.nom}</h2>
+      <div class="product-price" style="font-size:22px;margin:8px 0;">${formatPrix(p.prix)}</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+        <span class="badge">${p.etat === "NEUF" ? "Neuf" : "Occasion"}</span>
+        <span class="badge">${p.wilaya}${p.commune ? ", " + p.commune : ""}</span>
+        <span class="badge">${p.livraison === "LIVRAISON" ? "Livraison" : p.livraison === "MAIN_PROPRE" ? "Main propre" : "Livraison ou main propre"}</span>
+        ${isOwner ? `<span class="badge" style="background:#fdf1d8;color:#946200;">${p.status === 'ACTIVE' ? 'Ton annonce · Active' : p.status === 'VENDUE' ? 'Ton annonce · Vendue' : 'Ton annonce · Désactivée'}</span>` : ""}
+      </div>
+      <p style="color:var(--text-light);font-size:14px;">${p.description}</p>
+      <div class="seller-box">
+        <div class="seller-avatar">${seller ? initials(seller.prenom, seller.nom) : "?"}</div>
+        <div>
+          <div style="font-weight:700;font-size:14px;">${seller ? seller.prenom + " " + seller.nom : "Vendeur"}${isOwner ? " (toi)" : ""}</div>
+          <div style="font-size:12px;color:var(--text-light);">${seller ? seller.wilaya : ""}</div>
+        </div>
+      </div>
+      <div class="detail-actions">
+        ${isOwner ? `
+          <button class="btn btn-outline" id="btnToggleStatus">${p.status === 'ACTIVE' ? '✔ Marquer vendu' : '↺ Réactiver'}</button>
+          <button class="btn btn-outline" id="btnDeleteOwn" style="color:#b91c1c;border-color:#f3c9c9;">🗑️ Supprimer l'annonce</button>
+        ` : `
+          <button class="btn btn-primary" id="btnBuy">🛒 Acheter</button>
+          <button class="btn btn-outline" id="btnContact">💬 Contacter le vendeur</button>
+          <button class="btn btn-outline" id="btnFav">${isFav ? "❤️ Dans mes favoris" : "♡ Ajouter aux favoris"}</button>
+          <button class="btn btn-outline" id="btnReport">⚠️ Signaler</button>
+        `}
+      </div>
+    `;
+    document.querySelectorAll(".detail-thumbs img").forEach(img => img.onclick = () => { detailImgIndex = +img.dataset.i; render(); });
+
+    if (isOwner) {
+      document.getElementById("btnToggleStatus").onclick = () => {
+        p.status = p.status === "ACTIVE" ? "VENDUE" : "ACTIVE";
+        saveAll(); render(); renderProducts();
+        toast(p.status === "VENDUE" ? "Annonce marquée comme vendue." : "Annonce réactivée.");
+      };
+      document.getElementById("btnDeleteOwn").onclick = () => {
+        if (!confirm("Supprimer définitivement cette annonce ?")) return;
+        products = products.filter(x => x.id !== p.id);
+        saveAll();
+        hideOverlay("detailOverlay");
+        renderProducts();
+        toast("Annonce supprimée.");
+      };
+    } else {
+      document.getElementById("btnFav").onclick = () => { toggleFavorite(p.id); render(); };
+      document.getElementById("btnContact").onclick = () => openChat(p.id);
+      document.getElementById("btnBuy").onclick = () => openCheckout(p.id);
+      document.getElementById("btnReport").onclick = () => toast("Merci, ton signalement a été noté (démo locale).");
+    }
+  };
+  render();
+  showOverlay("detailOverlay");
+}
+
+// ---------- Checkout (achat, sans compte obligatoire) ----------
+let checkoutProductId = null;
+
+function openCheckout(productId) {
+  const p = products.find(x => x.id === productId);
+  if (!p) return;
+  checkoutProductId = productId;
+
+  document.getElementById("checkoutProductSummary").innerHTML = `
+    <div style="width:56px;height:56px;border-radius:8px;overflow:hidden;background:#eef1f4;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+      ${p.images[0] ? `<img src="${p.images[0]}" style="width:100%;height:100%;object-fit:cover;"/>` : "🖼️"}
+    </div>
+    <div>
+      <div style="font-weight:700;font-size:14px;">${p.nom}</div>
+      <div class="product-price" style="font-size:15px;">${formatPrix(p.prix)}</div>
+    </div>
+  `;
+
+  // Pré-remplissage si un compte est connecté (mais reste optionnel)
+  const user = currentUser();
+  document.getElementById("coNom").value = user ? `${user.prenom} ${user.nom}` : "";
+  document.getElementById("coTelephone").value = user ? user.telephone : "";
+  document.getElementById("coWilaya").value = user ? user.wilaya : p.wilaya;
+  document.getElementById("coCommune").value = user ? user.commune : p.commune;
+  document.getElementById("coQuantite").value = 1;
+  document.getElementById("coAdresse").value = "";
+  document.getElementById("checkoutError").classList.remove("show");
+
+  showOverlay("checkoutOverlay");
+}
+
+document.getElementById("checkoutSubmit").onclick = () => {
+  const p = products.find(x => x.id === checkoutProductId);
+  const errEl = document.getElementById("checkoutError");
+  const nomAcheteur = document.getElementById("coNom").value.trim();
+  const telephone = document.getElementById("coTelephone").value.trim();
+  const quantite = Math.max(1, parseInt(document.getElementById("coQuantite").value, 10) || 1);
+  const modeLivraison = document.getElementById("coLivraison").value;
+  const wilaya = document.getElementById("coWilaya").value.trim();
+  const commune = document.getElementById("coCommune").value.trim();
+  const adresse = document.getElementById("coAdresse").value.trim();
+
+  if (!nomAcheteur || !telephone || !wilaya || !commune || !adresse) {
+    errEl.textContent = "Merci de remplir tous les champs (aucun compte requis, juste tes coordonnées).";
+    errEl.classList.add("show");
+    return;
+  }
+  if (!/^0[5-7][0-9]{8}$/.test(telephone)) {
+    errEl.textContent = "Numéro de téléphone algérien invalide (ex: 0551234567).";
+    errEl.classList.add("show");
+    return;
+  }
+
+  const order = {
+    id: uid(),
+    productId: p.id,
+    productNom: p.nom,
+    sellerId: p.sellerId,
+    buyerId: currentUserId || null, // null = achat invité, sans compte
+    quantite,
+    prixTotal: p.prix * quantite,
+    nomAcheteur, telephone, wilaya, commune, adresse, modeLivraison,
+    status: "EN_ATTENTE",
+    createdAt: Date.now(),
+  };
+  orders.push(order);
+  saveAll();
+  hideOverlay("checkoutOverlay");
+  hideOverlay("detailOverlay");
+  toast("✅ Commande confirmée ! Le vendeur va te contacter.");
+};
+
+
+let pendingPhotos = []; // dataURLs
+
+function populateCategorySelect() {
+  const sel = document.getElementById("pCategorie");
+  sel.innerHTML = CATEGORIES.map(c => `<option value="${c.nom}">${c.emoji} ${c.nom}</option>`).join("");
+}
+
+function openPublishModal() {
+  const user = currentUser();
+  if (!user) { openAuthModal("register"); toast("Crée un compte pour publier une annonce."); return; }
+  pendingPhotos = [];
+  document.getElementById("photoPreviews").innerHTML = "";
+  document.getElementById("pNom").value = "";
+  document.getElementById("pDescription").value = "";
+  document.getElementById("pPrix").value = "";
+  document.getElementById("pWilaya").value = user.wilaya || "Alger";
+  document.getElementById("pCommune").value = user.commune || "";
+  document.getElementById("publishError").classList.remove("show");
+  showOverlay("publishOverlay");
+}
+
+document.getElementById("photoUploadZone").onclick = () => document.getElementById("photoInput").click();
+document.getElementById("photoInput").addEventListener("change", (e) => {
+  const files = Array.from(e.target.files).slice(0, 8 - pendingPhotos.length);
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = () => { pendingPhotos.push(reader.result); renderPhotoPreviews(); };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = "";
+});
+
+function renderPhotoPreviews() {
+  document.getElementById("photoPreviews").innerHTML = pendingPhotos.map((src, i) => `
+    <div class="thumb"><img src="${src}" /><button class="rm" data-i="${i}">✕</button></div>
+  `).join("");
+  document.querySelectorAll(".photo-previews .rm").forEach(btn => btn.onclick = () => {
+    pendingPhotos.splice(+btn.dataset.i, 1); renderPhotoPreviews();
+  });
+}
+
+document.getElementById("publishSubmit").onclick = () => {
+  const nom = document.getElementById("pNom").value.trim();
+  const description = document.getElementById("pDescription").value.trim();
+  const prix = parseFloat(document.getElementById("pPrix").value);
+  const categorie = document.getElementById("pCategorie").value;
+  const etat = document.getElementById("pEtat").value;
+  const livraison = document.getElementById("pLivraison").value;
+  const wilaya = document.getElementById("pWilaya").value.trim();
+  const commune = document.getElementById("pCommune").value.trim();
+  const errEl = document.getElementById("publishError");
+
+  if (!nom || !description || !prix || prix <= 0 || !wilaya || !commune) {
+    errEl.textContent = "Merci de remplir tous les champs obligatoires (prix inclus).";
+    errEl.classList.add("show");
+    return;
+  }
+
+  const product = {
+    id: uid(), sellerId: currentUserId, nom, description, prix, categorie, etat,
+    livraison, wilaya, commune, images: pendingPhotos.slice(),
+    status: "ACTIVE", createdAt: Date.now(), vues: 0,
+  };
+  products.push(product);
+  saveAll();
+  hideOverlay("publishOverlay");
+  toast("✅ Annonce publiée avec succès !");
+  renderProducts();
+};
+
+// ---------- Authentification ----------
+function openAuthModal(tab) {
+  document.getElementById("loginError").classList.remove("show");
+  document.getElementById("registerError").classList.remove("show");
+  switchAuthTab(tab || "login");
+  showOverlay("authOverlay");
+}
+function switchAuthTab(tab) {
+  document.getElementById("tabLogin").classList.toggle("active", tab === "login");
+  document.getElementById("tabRegister").classList.toggle("active", tab === "register");
+  document.getElementById("loginForm").style.display = tab === "login" ? "block" : "none";
+  document.getElementById("registerForm").style.display = tab === "register" ? "block" : "none";
+  document.getElementById("authPageTitle").textContent = tab === "login" ? "Connexion" : "Inscription";
+}
+document.getElementById("tabLogin").onclick = () => switchAuthTab("login");
+document.getElementById("tabRegister").onclick = () => switchAuthTab("register");
+
+document.getElementById("loginSubmit").onclick = () => {
+  const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+  const password = document.getElementById("loginPassword").value;
+  const errEl = document.getElementById("loginError");
+  const user = users.find(u => u.email.toLowerCase() === email && u.password === password);
+  if (!user) { errEl.textContent = "Email ou mot de passe incorrect."; errEl.classList.add("show"); return; }
+  currentUserId = user.id; saveAll(); renderHeader(); renderProducts();
+  hideOverlay("authOverlay"); toast(`Bienvenue, ${user.prenom} !`);
+};
+
+document.getElementById("registerSubmit").onclick = () => {
+  const prenom = document.getElementById("regPrenom").value.trim();
+  const nom = document.getElementById("regNom").value.trim();
+  const email = document.getElementById("regEmail").value.trim().toLowerCase();
+  const telephone = document.getElementById("regTelephone").value.trim();
+  const wilaya = document.getElementById("regWilaya").value.trim();
+  const commune = document.getElementById("regCommune").value.trim();
+  const password = document.getElementById("regPassword").value;
+  const errEl = document.getElementById("registerError");
+
+  if (!prenom || !nom || !email || !telephone || !wilaya || !commune || password.length < 4) {
+    errEl.textContent = "Merci de remplir tous les champs (mot de passe : 4 caractères min).";
+    errEl.classList.add("show"); return;
+  }
+  if (users.some(u => u.email.toLowerCase() === email)) {
+    errEl.textContent = "Cet email est déjà utilisé."; errEl.classList.add("show"); return;
+  }
+
+  const user = { id: uid(), prenom, nom, email, telephone, wilaya, commune, password };
+  users.push(user); currentUserId = user.id; saveAll();
+  renderHeader(); renderProducts();
+  hideOverlay("authOverlay"); toast(`Compte créé — bienvenue, ${prenom} !`);
+};
+
+// ---------- Messagerie ----------
+function getOrCreateConversation(productId) {
+  const p = products.find(x => x.id === productId);
+  let conv = conversations.find(c => c.productId === productId && c.buyerId === currentUserId);
+  if (!conv) {
+    conv = { id: uid(), productId, buyerId: currentUserId, sellerId: p.sellerId, messages: [] };
+    conversations.push(conv); saveAll();
+  }
+  return conv;
+}
+
+let activeChatConvId = null;
+let chatOpenedFromInbox = false;
+
+function openChat(productId, fromInbox = false) {
+  const user = currentUser();
+  if (!user) { openAuthModal("login"); return; }
+  const p = products.find(x => x.id === productId);
+  if (p.sellerId === user.id) { toast("C'est ta propre annonce 🙂"); return; }
+  const conv = getOrCreateConversation(productId);
+  activeChatConvId = conv.id;
+  chatOpenedFromInbox = fromInbox;
+  document.getElementById("chatTitle").textContent = p.nom;
+  renderChatMessages();
+  showOverlay("chatOverlay");
+}
+
+function openChatById(conversationId, productName, fromInbox = true) {
+  activeChatConvId = conversationId;
+  chatOpenedFromInbox = fromInbox;
+  document.getElementById("chatTitle").textContent = productName || "Conversation";
+  renderChatMessages();
+  showOverlay("chatOverlay");
+}
+
+document.getElementById("chatBackBtn").onclick = () => {
+  hideOverlay("chatOverlay");
+  if (chatOpenedFromInbox) openListModal("Mes messages", myConversationsList);
+};
+
+function timeAgo(ts) {
+  if (!ts) return "";
+  const diff = Date.now() - ts;
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return "à l'instant";
+  if (min < 60) return `${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `${h} h`;
+  const d = Math.floor(h / 24);
+  if (d < 7) return `${d} j`;
+  return new Date(ts).toLocaleDateString("fr-FR");
+}
+
+function renderChatMessages() {
+  const conv = conversations.find(c => c.id === activeChatConvId);
+  conv.messages.forEach(m => { if (m.senderId !== currentUserId) m.read = true; });
+  saveAll();
+  const box = document.getElementById("chatMessages");
+  box.innerHTML = conv.messages.length
+    ? conv.messages.map(m => `
+        <div class="msg ${m.senderId === currentUserId ? 'me' : 'them'}">
+          ${m.contenu}
+          <div style="font-size:10px;opacity:0.7;margin-top:3px;">${timeAgo(m.createdAt)}</div>
+        </div>`).join("")
+    : `<p style="text-align:center;color:var(--text-light);font-size:13px;margin-top:20px;">Dis bonjour pour commencer la discussion 👋</p>`;
+  box.scrollTop = box.scrollHeight;
+  renderHeader();
+}
+
+document.getElementById("chatSend").onclick = sendChatMessage;
+document.getElementById("chatInput").addEventListener("keydown", (e) => { if (e.key === "Enter") sendChatMessage(); });
+function sendChatMessage() {
+  const input = document.getElementById("chatInput");
+  const text = input.value.trim();
+  if (!text || !activeChatConvId) return;
+  const conv = conversations.find(c => c.id === activeChatConvId);
+  conv.messages.push({ senderId: currentUserId, contenu: text, createdAt: Date.now(), read: false });
+  saveAll(); input.value = ""; renderChatMessages();
+}
+
+// ---------- Listes (favoris / messages / mes annonces) ----------
+function myFavoritesList() {
+  const mine = favorites.filter(f => f.userId === currentUserId).map(f => products.find(p => p.id === f.productId)).filter(Boolean);
+  if (!mine.length) return `<p style="color:var(--text-light);">Aucun favori pour le moment.</p>`;
+  return `<div class="products-grid">` + mine.map(p => `
+    <div class="product-card" onclick="hideOverlay('listOverlay');openProductDetail('${p.id}')">
+      <div class="product-image">${p.images[0] ? `<img src="${p.images[0]}"/>` : "🖼️"}</div>
+      <div class="product-body">
+        <div class="product-name">${p.nom}</div>
+        <div class="product-price">${formatPrix(p.prix)}</div>
+      </div>
+    </div>`).join("") + `</div>`;
+}
+
+// Style inspiré des apps type AliExpress : avatar rond, aperçu du dernier message,
+// heure à droite, badge non-lu en gras.
+function myConversationsList() {
+  const mine = [...conversations]
+    .filter(c => c.buyerId === currentUserId || c.sellerId === currentUserId)
+    .sort((a, b) => {
+      const la = a.messages[a.messages.length - 1]?.createdAt || 0;
+      const lb = b.messages[b.messages.length - 1]?.createdAt || 0;
+      return lb - la;
+    });
+
+  if (!mine.length) return `<p style="color:var(--text-light);">Aucune conversation pour le moment.</p>`;
+
+  return mine.map(c => {
+    const p = products.find(x => x.id === c.productId);
+    const other = users.find(u => u.id === (c.buyerId === currentUserId ? c.sellerId : c.buyerId));
+    const last = c.messages[c.messages.length - 1];
+    const unread = c.messages.filter(m => m.senderId !== currentUserId && !m.read).length;
+    const productName = (p ? p.nom : "Produit supprimé").replace(/'/g, "\\'");
+
+    return `<div class="my-list-item" style="cursor:pointer;padding:12px;" onclick="hideOverlay('listOverlay');openChatById('${c.id}','${productName}',true);">
+      <div class="thumb" style="display:flex;align-items:center;justify-content:center;background:var(--primary);color:white;font-weight:700;border-radius:50%;font-size:16px;">${other ? initials(other.prenom, other.nom) : "?"}</div>
+      <div class="info">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+          <div class="n" style="${unread ? 'font-weight:800;' : ''}">${other ? other.prenom + " " + other.nom : "Utilisateur"}</div>
+          <div style="font-size:11px;color:var(--text-light);white-space:nowrap;">${last ? timeAgo(last.createdAt) : ""}</div>
+        </div>
+        <div style="font-size:12px;color:var(--text-light);font-style:italic;margin:1px 0;">📦 ${p ? p.nom : "Produit supprimé"}</div>
+        <div style="font-size:13px;color:${unread ? 'var(--text)' : 'var(--text-light)'};font-weight:${unread ? '600' : '400'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${last ? last.contenu : "Aucun message"}</div>
+      </div>
+      ${unread ? `<span style="background:var(--primary);color:white;font-size:11px;font-weight:700;border-radius:999px;padding:2px 7px;height:fit-content;">${unread}</span>` : ""}
+    </div>`;
+  }).join("");
+}
+
+function myAnnoncesList() {
+  const mine = products.filter(p => p.sellerId === currentUserId).sort((a, b) => b.createdAt - a.createdAt);
+  if (!mine.length) return `<p style="color:var(--text-light);">Tu n'as encore publié aucune annonce.</p>`;
+  return mine.map(p => `
+    <div class="my-list-item">
+      <img class="thumb" src="${p.images[0] || ''}" style="${p.images[0] ? '' : 'display:flex;align-items:center;justify-content:center;'}" />
+      <div class="info">
+        <div class="n">${p.nom}</div>
+        <div style="font-size:12px;color:var(--text-light);">${formatPrix(p.prix)} · ${p.status === 'ACTIVE' ? 'Active' : p.status === 'VENDUE' ? 'Vendue' : 'Désactivée'}</div>
+      </div>
+      <button class="btn btn-outline btn-sm" data-toggle="${p.id}">${p.status === 'ACTIVE' ? 'Marquer vendu' : 'Réactiver'}</button>
+      <button class="btn btn-outline btn-sm" data-del="${p.id}">🗑️</button>
+    </div>
+  `).join("");
+}
+
+const ORDER_STATUS_LABELS = {
+  EN_ATTENTE: "En attente", ACCEPTEE: "Acceptée", REFUSEE: "Refusée",
+  EN_PREPARATION: "En préparation", EXPEDIEE: "Expédiée", LIVREE: "Livrée", ANNULEE: "Annulée",
+};
+
+function receivedOrdersList() {
+  const mine = orders.filter(o => o.sellerId === currentUserId).sort((a, b) => b.createdAt - a.createdAt);
+  if (!mine.length) return `<p style="color:var(--text-light);">Aucune commande reçue pour le moment.</p>`;
+  return mine.map(o => `
+    <div class="my-list-item" style="align-items:flex-start;">
+      <div style="flex:1;">
+        <div class="n">${o.productNom} × ${o.quantite}</div>
+        <div style="font-size:12px;color:var(--text-light);margin:2px 0;">
+          👤 ${o.nomAcheteur} · 📞 ${o.telephone}<br/>
+          📍 ${o.commune}, ${o.wilaya} — ${o.adresse}<br/>
+          ${formatPrix(o.prixTotal)} · ${timeAgo(o.createdAt)}
+        </div>
+        <span class="badge">${ORDER_STATUS_LABELS[o.status] || o.status}</span>
+      </div>
+      ${o.status === "EN_ATTENTE" ? `
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <button class="btn btn-primary btn-sm" data-accept="${o.id}">✔ Accepter</button>
+          <button class="btn btn-outline btn-sm" data-refuse="${o.id}">✕ Refuser</button>
+        </div>` : ""}
+    </div>
+  `).join("");
+}
+
+function openListModal(title, contentFn) {
+  document.getElementById("listTitle").textContent = title;
+  document.getElementById("listContent").innerHTML = typeof contentFn === "string" ? contentFn : contentFn();
+  showOverlay("listOverlay");
+  document.querySelectorAll("[data-toggle]").forEach(btn => btn.onclick = () => {
+    const p = products.find(x => x.id === btn.dataset.toggle);
+    p.status = p.status === "ACTIVE" ? "VENDUE" : "ACTIVE";
+    saveAll(); openListModal("Mes annonces", myAnnoncesList); renderProducts();
+  });
+  document.querySelectorAll("[data-del]").forEach(btn => btn.onclick = () => {
+    if (!confirm("Supprimer définitivement cette annonce ?")) return;
+    products = products.filter(x => x.id !== btn.dataset.del);
+    saveAll(); openListModal("Mes annonces", myAnnoncesList); renderProducts();
+    toast("Annonce supprimée.");
+  });
+  document.querySelectorAll("[data-accept]").forEach(btn => btn.onclick = () => {
+    const o = orders.find(x => x.id === btn.dataset.accept);
+    o.status = "ACCEPTEE"; saveAll();
+    openListModal("Commandes reçues", receivedOrdersList);
+    toast("Commande acceptée ✔");
+  });
+  document.querySelectorAll("[data-refuse]").forEach(btn => btn.onclick = () => {
+    const o = orders.find(x => x.id === btn.dataset.refuse);
+    o.status = "REFUSEE"; saveAll();
+    openListModal("Commandes reçues", receivedOrdersList);
+    toast("Commande refusée.");
+  });
+}
+
+// ---------- Overlays génériques ----------
+function showOverlay(id) { document.getElementById(id).classList.add("show"); }
+function hideOverlay(id) { document.getElementById(id).classList.remove("show"); }
+document.querySelectorAll("[data-close]").forEach(btn => btn.onclick = () => hideOverlay(btn.dataset.close));
+document.querySelectorAll(".overlay").forEach(ov => ov.addEventListener("click", (e) => { if (e.target === ov) ov.classList.remove("show"); }));
+
+document.getElementById("locationBadge").onclick = () => {
+  if (!navigator.geolocation) {
+    toast("La géolocalisation n'est pas disponible sur cet appareil.");
+    return;
+  }
+  if (location.protocol !== "https:" && location.hostname !== "localhost") {
+    // La plupart des navigateurs bloquent le GPS sur un fichier ouvert en local (file://)
+    toast("⚠️ Le GPS ne marche que sur un site en https:// — ici on garde Alger.");
+    return;
+  }
+  toast("📍 Localisation en cours...");
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      DEFAULT_LOCATION.lat = +pos.coords.latitude.toFixed(4);
+      DEFAULT_LOCATION.lng = +pos.coords.longitude.toFixed(4);
+      DEFAULT_LOCATION.ville = "Ma position";
+      DB.set("souqdz_location", DEFAULT_LOCATION);
+      document.getElementById("locationLabel").textContent = "Ma position";
+      toast(`📍 Position mise à jour : ${DEFAULT_LOCATION.lat}, ${DEFAULT_LOCATION.lng}`);
+    },
+    (err) => {
+      const msgs = {
+        1: "Tu as refusé l'accès à ta position.",
+        2: "Position indisponible sur cet appareil.",
+        3: "La demande de position a expiré.",
+      };
+      toast("⚠️ " + (msgs[err.code] || "Erreur GPS") + " — on garde Alger.");
+    },
+    { enableHighAccuracy: true, timeout: 8000 }
+  );
+};
+
+// ---------- Démarrage ----------
+document.getElementById("locationLabel").textContent = DEFAULT_LOCATION.ville;
+populateCategorySelect();
+renderHeader();
+renderCategories();
+renderProducts();
+</script>
+
+</body>
+</html>
